@@ -25,20 +25,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Add hover effect to interactive elements
-    const interactiveElements = document.querySelectorAll(
-      "a, button, .project-card, .timeline-content"
-    );
+    const interactiveElements = document.querySelectorAll("a, button, .card, input, textarea");
     interactiveElements.forEach((el) => {
       el.addEventListener("mouseenter", () => {
         cursorOutline.style.transform = "translate(-50%, -50%) scale(1.5)";
         cursorOutline.style.backgroundColor = "rgba(66, 133, 244, 0.1)";
+        cursorOutline.style.borderColor = "transparent";
       });
       el.addEventListener("mouseleave", () => {
         cursorOutline.style.transform = "translate(-50%, -50%) scale(1)";
         cursorOutline.style.backgroundColor = "transparent";
+        cursorOutline.style.borderColor = "var(--google-blue)";
       });
     });
   }
+
   // Hero Animations
   const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
@@ -48,162 +49,100 @@ document.addEventListener("DOMContentLoaded", () => {
     duration: 1,
   })
     .from(
-      ".greeting",
+      ".hero-content > *",
       {
-        y: 20,
+        y: 30,
         opacity: 0,
         duration: 0.8,
+        stagger: 0.1,
       },
       "-=0.5"
     )
     .from(
-      ".name",
+      ".hero-visual",
       {
-        y: 30,
+        scale: 0.8,
         opacity: 0,
         duration: 1,
+        ease: "back.out(1.7)",
       },
-      "-=0.6"
+      "-=0.8"
     )
     .from(
-      ".tagline",
-      {
-        y: 20,
-        opacity: 0,
-        duration: 0.8,
-      },
-      "-=0.6"
-    )
-    .from(
-      ".description",
-      {
-        y: 20,
-        opacity: 0,
-        duration: 0.8,
-      },
-      "-=0.6"
-    )
-    .from(
-      ".cta-buttons .btn",
-      {
-        y: 20,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.2,
-        onComplete: function () {
-          gsap.set(this.targets(), { clearProps: "all" });
-          gsap.set(this.targets(), { opacity: 1, transform: "none" });
-        },
-      },
-      "-=0.6"
-    )
-    .from(
-      ".hero-visual .shape",
+      ".shape",
       {
         scale: 0,
         opacity: 0,
         duration: 1.5,
-        stagger: 0.3,
+        stagger: 0.2,
         ease: "elastic.out(1, 0.5)",
-      },
-      "-=1.5"
-    )
-    .from(
-      ".scroll-indicator",
-      {
-        y: 20,
-        opacity: 0,
-        duration: 1,
       },
       "-=1"
     );
 
   // Scroll Animations
 
-  // Helper function for scroll animations
-  const animateOnScroll = (selector, vars, triggerParams = {}) => {
-    const elements = document.querySelectorAll(selector);
-    if (elements.length > 0) {
-      gsap.from(elements, {
-        scrollTrigger: {
-          trigger: selector,
-          start: "top 80%",
-          ...triggerParams,
-        },
-        opacity: 0,
-        duration: 1,
-        ease: "power3.out",
-        ...vars,
-      });
-    }
-  };
-
   // About Section
-  animateOnScroll(".about-image", { x: -50, opacity: 0 });
-  animateOnScroll(".about-text", { x: 50, opacity: 0, delay: 0.2 });
+  gsap.from(".about-image", {
+    scrollTrigger: {
+      trigger: ".about-image",
+      start: "top 80%",
+    },
+    x: -50,
+    opacity: 0,
+    duration: 1,
+    ease: "power3.out",
+  });
 
-  // Skills Section
-  const skillSection = document.querySelector(".skills");
+  gsap.from(".about-text", {
+    scrollTrigger: {
+      trigger: ".about-text",
+      start: "top 80%",
+    },
+    x: 50,
+    opacity: 0,
+    duration: 1,
+    delay: 0.2,
+    ease: "power3.out",
+  });
+
+  // Skills Section - Progress Bars
+  const skillSection = document.querySelector("#skills");
   if (skillSection) {
-    ScrollTrigger.create({
-      trigger: ".skills",
-      start: "top 75%",
-      onEnter: () => {
-        document.querySelectorAll(".skill-bar .bar span").forEach((bar) => {
-          const width = bar.getAttribute("data-width");
+    const progressBars = document.querySelectorAll(".progress-bar");
+    progressBars.forEach((bar) => {
+      const width = bar.style.width;
+      bar.style.width = "0"; // Reset for animation
+
+      ScrollTrigger.create({
+        trigger: bar,
+        start: "top 85%",
+        onEnter: () => {
           gsap.to(bar, {
             width: width,
             duration: 1.5,
             ease: "power2.out",
           });
-        });
-      },
+        },
+      });
     });
   }
 
-  // Portfolio Section
-  const projectItems = document.querySelectorAll(".project-list-item");
-  if (projectItems.length > 0) {
-    // Set initial state to avoid FOUC
-    gsap.set(".project-list-item", { y: 50, opacity: 0 });
-
-    ScrollTrigger.batch(".project-list-item", {
+  // Cards Animation (Skills & Portfolio)
+  const cards = document.querySelectorAll(".card-animate");
+  if (cards.length > 0) {
+    ScrollTrigger.batch(cards, {
       start: "top 85%",
       onEnter: (batch) => {
-        gsap.to(batch, {
-          opacity: 1,
-          y: 0,
+        gsap.from(batch, {
+          y: 50,
+          opacity: 0,
           duration: 0.8,
           stagger: 0.15,
           ease: "power3.out",
           overwrite: true,
         });
       },
-      onEnterBack: (batch) => {
-        gsap.to(batch, {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          stagger: 0.15,
-          ease: "power3.out",
-          overwrite: true,
-        });
-      },
-    });
-  }
-
-  // Contact Section
-  const contactWrapper = document.querySelector(".contact-wrapper");
-  if (contactWrapper) {
-    gsap.from(".contact-wrapper", {
-      scrollTrigger: {
-        trigger: ".contact",
-        start: "top 80%",
-      },
-      y: 50,
-      opacity: 0,
-      duration: 1,
-      ease: "power3.out",
     });
   }
 
