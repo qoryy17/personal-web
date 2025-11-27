@@ -78,7 +78,7 @@ personal-web/
 
 **Qori Chairawan**
 
-- 💼 **Role**: IT Enthusiast & Aparatur Sipil Negara (ASN)
+- 💼 **Role**: IT Enthusiast & Civil Servant (ASN)
 - 🏛️ **Organization**: Pengadilan Negeri Lubuk Pakam
 - 📍 **Location**: Lubuk Pakam, Indonesia
 
